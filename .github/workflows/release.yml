@@ -95,7 +95,7 @@ jobs:
             goarch: s390x
           # END S390X
       fail-fast: false
-      
+
     runs-on: ubuntu-latest
     env:
       GOOS: ${{ matrix.goos }}
@@ -105,14 +105,14 @@ jobs:
     steps:
       - name: Checkout codebase
         uses: actions/checkout@v3
-      - name: Show workflow information 
+      - name: Show workflow information
         id: get_filename
         run: |
           export _NAME=$(jq ".[\"$GOOS-$GOARCH$GOARM$GOMIPS\"].friendlyName" -r < .github/build/friendly-filenames.json)
           echo "GOOS: $GOOS, GOARCH: $GOARCH, GOARM: $GOARM, GOMIPS: $GOMIPS, RELEASE_NAME: $_NAME"
           echo "::set-output name=ASSET_NAME::$_NAME"
           echo "ASSET_NAME=$_NAME" >> $GITHUB_ENV
-    
+
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
@@ -126,7 +126,7 @@ jobs:
         run: |
           mkdir -p build_assets
           go build -v -o build_assets/XrayR -trimpath -ldflags "-s -w -buildid=" ./main
-    
+
       - name: Build Mips softfloat XrayR
         if: matrix.goarch == 'mips' || matrix.goarch == 'mipsle'
         run: |
@@ -188,4 +188,3 @@ jobs:
           file: ./XrayR-${{ steps.get_filename.outputs.ASSET_NAME }}.zip*
           tag: ${{ github.ref }}
           file_glob: true
-
